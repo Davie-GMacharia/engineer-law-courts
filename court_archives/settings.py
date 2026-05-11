@@ -94,3 +94,11 @@ ALLOWED_HOSTS = ['*']
 import os
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Production database
+import dj_database_url
+import os
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
+
+ALLOWED_HOSTS = ['engineer-law-courts.onrender.com', '127.0.0.1', 'localhost', '*']
