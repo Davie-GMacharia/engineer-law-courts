@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Schedule Hearing — Engineer Law Courts{% endblock %}
+{% block page_title %}Schedule Hearing{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'case_detail' case.pk %}" class="btn btn-outline">← Back to Case</a>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:500px">
+    <div style="background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:14px 18px; margin-bottom:20px; font-size:14px; color:var(--text-mid);">
+        Scheduling for: <strong style="color:var(--navy);">{{ case.case_number }}</strong>
+    </div>
+    <div class="card">
+        <div class="card-header"><span class="card-title">Hearing Details</span></div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Date & Time *</label>
+                    <input type="datetime-local" name="hearing_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Purpose *</label>
+                    <input type="text" name="purpose" class="form-control" placeholder="e.g. Mention, Hearing, Judgement delivery" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Outcome <span style="color:var(--text-light); font-weight:400;">(fill after hearing)</span></label>
+                    <textarea name="outcome" class="form-control" rows="3" placeholder="Record the outcome after the hearing..."></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+                    <a href="{% url 'case_detail' case.pk %}" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-gold">Schedule Hearing</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

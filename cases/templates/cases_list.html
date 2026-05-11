@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Cases — Engineer Law Courts{% endblock %}
+{% block page_title %}All Cases{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'case_new' %}" class="btn btn-gold">+ File New Case</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div style="display:flex; align-items:center; gap:8px; background:var(--cream); border:1px solid var(--cream-dark); border-radius:8px; padding:8px 14px; width:300px;">
+            <span style="color:var(--text-light);">🔍</span>
+            <input type="text" placeholder="Search cases..." id="searchInput" onkeyup="filterTable()" style="border:none; background:transparent; font-size:14px; font-family:'DM Sans',sans-serif; color:var(--text-dark); flex:1; outline:none;">
+        </div>
+        <select class="form-control" style="width:auto; padding:8px 12px; font-size:13px;" onchange="filterByStatus(this.value)">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Closed">Closed</option>
+            <option value="Appealed">Appealed</option>
+        </select>
+    </div>
+    <div class="table-wrap">
+        <table id="casesTable">
+            <thead>
+                <tr><th>Case Number</th><th>Title</th><th>Parties</th><th>Date Filed</th><th>Status</th><th>Assigned To</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for case in cases %}
+                <tr>
+                    <td style="font-weight:600; color:var(--navy);">{{ case.case_number }}</td>
+                    <td>{{ case.case_title|truncatechars:40 }}</td>
+                    <td style="color:var(--text-mid); font-size:13px;">{{ case.parties|truncatechars:30 }}</td>
+                    <td style="color:var(--text-mid);">{{ case.date_filed|date:"d M Y" }}</td>
+                    <td><span class="badge badge-{{ case.case_status|lower }}">{{ case.case_status }}</span></td>
+                    <td style="color:var(--text-mid);">{{ case.assigned_to|default:"—" }}</td>
+                    <td><a href="{% url 'case_detail' case.pk %}" class="btn btn-outline" style="padding:5px 12px; font-size:12px;">View</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="text-align:center; padding:50px; color:var(--text-light);">No cases filed yet</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#casesTable tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+function filterByStatus(status) {
+    document.querySelectorAll('#casesTable tbody tr').forEach(row => {
+        row.style.display = (!status || row.textContent.includes(status)) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

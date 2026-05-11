@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Engineer Law Courts{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Cases</div>
+        <div class="stat-value">{{ total_cases }}</div>
+        <div class="stat-sub">All registered cases</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#2d7a4f">
+        <div class="stat-label">Active Cases</div>
+        <div class="stat-value" style="color:#2d7a4f">{{ active_cases }}</div>
+        <div class="stat-sub">Currently in progress</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#b85c00">
+        <div class="stat-label">Upcoming Hearings</div>
+        <div class="stat-value" style="color:#b85c00">{{ upcoming_hearings }}</div>
+        <div class="stat-sub">Next 30 days</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#185fa5">
+        <div class="stat-label">Documents Filed</div>
+        <div class="stat-value" style="color:#185fa5">{{ total_documents }}</div>
+        <div class="stat-sub">All uploaded documents</div>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Recent Cases</span>
+            <a href="{% url 'cases_list' %}" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">View all</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Case No.</th><th>Title</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for case in recent_cases %}
+                    <tr>
+                        <td><a href="{% url 'case_detail' case.pk %}" style="color:var(--navy); font-weight:500; text-decoration:none;">{{ case.case_number }}</a></td>
+                        <td style="color:var(--text-mid);">{{ case.case_title|truncatechars:35 }}</td>
+                        <td><span class="badge badge-{{ case.case_status|lower }}">{{ case.case_status }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" style="text-align:center; color:var(--text-light); padding:30px;">No cases yet</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Upcoming Hearings</span>
+            <a href="{% url 'hearings_list' %}" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">View all</a>
+        </div>
+        <div class="card-body" style="padding:0">
+            {% for hearing in upcoming_hearing_list %}
+            <div style="padding:16px 24px; border-bottom:1px solid var(--cream-dark); display:flex; gap:16px; align-items:center;">
+                <div style="background:var(--navy); color:var(--gold); border-radius:8px; padding:8px 10px; text-align:center; min-width:46px;">
+                    <div style="font-size:18px; font-weight:700; font-family:'Playfair Display',serif;">{{ hearing.hearing_date|date:"d" }}</div>
+                    <div style="font-size:10px; letter-spacing:1px; text-transform:uppercase;">{{ hearing.hearing_date|date:"M" }}</div>
+                </div>
+                <div>
+                    <div style="font-weight:500; font-size:14px;">{{ hearing.purpose }}</div>
+                    <div style="font-size:12px; color:var(--text-light); margin-top:2px;">{{ hearing.case.case_number }} · {{ hearing.hearing_date|date:"g:i A" }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align:center; padding:40px; color:var(--text-light); font-size:14px;">No upcoming hearings</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

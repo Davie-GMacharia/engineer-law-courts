@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}{{ case.case_number }} — Engineer Law Courts{% endblock %}
+{% block page_title %}{{ case.case_number }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'cases_list' %}" class="btn btn-outline">← Back</a>
+<a href="{% url 'document_upload' case.pk %}" class="btn btn-gold">Upload Document</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid; grid-template-columns:2fr 1fr; gap:20px;">
+    <div>
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+                <span class="card-title">Case Details</span>
+                <span class="badge badge-{{ case.case_status|lower }}">{{ case.case_status }}</span>
+            </div>
+            <div class="card-body">
+                <table style="width:100%">
+                    <tr>
+                        <td style="padding:10px 0; color:var(--text-light); font-size:13px; width:140px;">Case Title</td>
+                        <td style="padding:10px 0; font-weight:500;">{{ case.case_title }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Parties</td>
+                        <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ case.parties }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Date Filed</td>
+                        <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ case.date_filed|date:"d F Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Assigned To</td>
+                        <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ case.assigned_to|default:"Not assigned" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+                <span class="card-title">Documents</span>
+                <a href="{% url 'document_upload' case.pk %}" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">+ Upload</a>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Document</th><th>Type</th><th>Uploaded</th><th>Verified</th><th></th></tr></thead>
+                    <tbody>
+                        {% for doc in case.documents.all %}
+                        <tr>
+                            <td style="font-weight:500;">{{ doc.title }}</td>
+                            <td><span class="badge" style="background:var(--cream); color:var(--text-mid);">{{ doc.document_type }}</span></td>
+                            <td style="color:var(--text-mid); font-size:13px;">{{ doc.uploaded_at|date:"d M Y" }}</td>
+                            <td>{% if doc.is_verified %}<span class="badge badge-verified">✓ Yes</span>{% else %}<span style="color:var(--text-light); font-size:13px;">Pending</span>{% endif %}</td>
+                            <td><a href="{{ doc.file.url }}" class="btn btn-outline" style="padding:4px 10px; font-size:12px;" target="_blank">View</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-light);">No documents uploaded</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Hearing Dates</span>
+                <a href="{% url 'hearing_new' case.pk %}" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">+ Add Hearing</a>
+            </div>
+            <div class="card-body" style="padding:0">
+                {% for hearing in case.hearing_set.all %}
+                <div style="padding:16px 24px; border-bottom:1px solid var(--cream-dark); display:flex; gap:16px; align-items:flex-start;">
+                    <div style="background:var(--navy); color:var(--gold); border-radius:8px; padding:8px 10px; text-align:center; min-width:46px; flex-shrink:0;">
+                        <div style="font-size:18px; font-weight:700; font-family:'Playfair Display',serif;">{{ hearing.hearing_date|date:"d" }}</div>
+                        <div style="font-size:10px; letter-spacing:1px; text-transform:uppercase;">{{ hearing.hearing_date|date:"M" }}</div>
+                    </div>
+                    <div>
+                        <div style="font-weight:500; font-size:14px;">{{ hearing.purpose }}</div>
+                        <div style="font-size:12px; color:var(--text-light); margin-top:3px;">{{ hearing.hearing_date|date:"g:i A" }}</div>
+                        {% if hearing.outcome %}<div style="font-size:13px; color:var(--text-mid); margin-top:6px; background:var(--cream); padding:8px 12px; border-radius:6px;">{{ hearing.outcome }}</div>{% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align:center; padding:40px; color:var(--text-light); font-size:14px;">No hearings scheduled</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Parties</span></div>
+            <div class="card-body" style="padding:0">
+                {% for party in case.party_set.all %}
+                <div style="padding:14px 20px; border-bottom:1px solid var(--cream-dark); display:flex; align-items:center; gap:12px;">
+                    <div style="width:36px; height:36px; border-radius:50%; background:{% if party.role == 'Plaintiff' %}#e6f4ec{% else %}#fdecea{% endif %}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:{% if party.role == 'Plaintiff' %}var(--success){% else %}var(--danger){% endif %}; flex-shrink:0;">{{ party.name|slice:":1"|upper }}</div>
+                    <div>
+                        <div style="font-weight:500; font-size:14px;">{{ party.name }}</div>
+                        <div style="font-size:12px; color:var(--text-light);">{{ party.role }}</div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="padding:30px; text-align:center; color:var(--text-light); font-size:13px;">No parties added</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
