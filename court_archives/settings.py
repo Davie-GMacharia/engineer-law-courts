@@ -102,3 +102,12 @@ if os.environ.get('DATABASE_URL'):
     DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
 
 ALLOWED_HOSTS = ['engineer-law-courts.onrender.com', '127.0.0.1', 'localhost', '*']
+
+import dj_database_url
+import os
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', 'postgresql://postgres@localhost/engineer_law_courts'),
+        conn_max_age=600
+    )
+}
