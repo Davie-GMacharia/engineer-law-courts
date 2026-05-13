@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Receipt — Engineer Law Courts{% endblock %}
+{% block page_title %}Confirm File Receipt{% endblock %}
+
+{% block content %}
+<div style="max-width:500px">
+    <div class="card">
+        <div class="card-header"><span class="card-title">Confirm Receipt</span></div>
+        <div class="card-body">
+            <table style="width:100%; margin-bottom:20px;">
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; width:140px;">Case</td>
+                    <td style="padding:10px 0; font-weight:500;">{{ movement.case.case_number }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">From</td>
+                    <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ movement.from_location }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">To</td>
+                    <td style="padding:10px 0; border-top:1px solid var(--cream-dark); font-weight:500;">{{ movement.to_location }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Purpose</td>
+                    <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ movement.purpose }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Moved By</td>
+                    <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ movement.moved_by|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px 0; color:var(--text-light); font-size:13px; border-top:1px solid var(--cream-dark);">Date Moved</td>
+                    <td style="padding:10px 0; border-top:1px solid var(--cream-dark);">{{ movement.moved_at|date:"d M Y g:i A" }}</td>
+                </tr>
+            </table>
+            <form method="post">
+                {% csrf_token %}
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <a href="{% url 'file_movements_list' %}" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-gold">✓ Confirm Receipt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

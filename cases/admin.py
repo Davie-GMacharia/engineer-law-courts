@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Case, Document, Hearing, Party
+from .models import Case, Document, Hearing, Party, FileMovement
 
 @admin.register(Case)
 class CaseAdmin(admin.ModelAdmin):
@@ -24,3 +24,9 @@ class PartyAdmin(admin.ModelAdmin):
     list_display = ['name', 'case', 'role']
     search_fields = ['name', 'case__case_number']
     list_filter = ['role']
+
+@admin.register(FileMovement)
+class FileMovementAdmin(admin.ModelAdmin):
+    list_display = ['case', 'from_location', 'to_location', 'moved_by', 'status', 'moved_at']
+    search_fields = ['case__case_number', 'purpose']
+    list_filter = ['status', 'from_location', 'to_location']

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}File Movements — Engineer Law Courts{% endblock %}
+{% block page_title %}File Movements{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header"><span class="card-title">All File Movements</span></div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Case</th><th>From</th><th>To</th><th>Purpose</th><th>Moved By</th><th>Date</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for movement in movements %}
+                <tr>
+                    <td><a href="{% url 'case_detail' movement.case.pk %}" style="color:var(--navy); font-weight:500; text-decoration:none;">{{ movement.case.case_number }}</a></td>
+                    <td style="color:var(--text-mid);">{{ movement.from_location }}</td>
+                    <td style="font-weight:500;">{{ movement.to_location }}</td>
+                    <td style="color:var(--text-mid); font-size:13px;">{{ movement.purpose }}</td>
+                    <td style="color:var(--text-mid); font-size:13px;">{{ movement.moved_by|default:"—" }}</td>
+                    <td style="color:var(--text-mid); font-size:13px;">{{ movement.moved_at|date:"d M Y g:i A" }}</td>
+                    <td>
+                        {% if movement.status == 'In Transit' %}
+                        <span class="badge badge-appealed">In Transit</span>
+                        {% elif movement.status == 'Received' %}
+                        <span class="badge badge-active">Received</span>
+                        {% else %}
+                        <span class="badge badge-closed">Returned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if movement.status == 'In Transit' %}
+                        <a href="{% url 'file_movement_receive' movement.pk %}" class="btn btn-gold" style="padding:5px 12px; font-size:12px;">Confirm Receipt</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" style="text-align:center; padding:50px; color:var(--text-light);">No file movements recorded yet</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

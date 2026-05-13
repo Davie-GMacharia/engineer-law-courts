@@ -120,3 +120,42 @@ class HearingViewSet(viewsets.ModelViewSet):
 class PartyViewSet(viewsets.ModelViewSet):
     queryset = Party.objects.all()
     serializer_class = PartySerializer
+@login_required
+def file_movement_new(request, case_pk):
+    case = get_object_or_404(Case, pk=case_pk)
+    if request.method == 'POST':
+        from .models import FileMovement
+        FileMovement.objects.create(
+            case=case,
+            from_location=request.POST['from_location'],
+            to_location=request.POST['to_location'],
+            moved_by=request.user,
+            purpose=request.POST['purpose'],
+            status='In Transit',
+            notes=request.POST.get('notes', ''),
+        )
+        messages.success(request, 'File movement recorded successfully.')
+        return redirect('case_detail', pk=case_pk)
+    return render(request, 'file_movement_new.html', {'case': case})
+
+
+@login_required
+def file_movement_receive(request, movement_pk):
+    from .models import FileMovement
+    from django.utils import timezone
+    movement = get_object_or_404(FileMovement, pk=movement_pk)
+    if request.method == 'POST':
+        movement.status = 'Received'
+        movement.received_by = request.user
+        movement.received_at = timezone.now()
+        movement.save()
+        messages.success(request, 'File receipt confirmed.')
+        return redirect('case_detail', pk=movement.case.pk)
+    return render(request, 'file_movement_receive.html', {'movement': movement})
+
+
+@login_required
+def file_movements_list(request):
+    from .models import FileMovement
+    movements = FileMovement.objects.all().order_by('-moved_at')
+    return render(request, 'file_movements_list.html', {'movements': movements})
