@@ -159,3 +159,66 @@ def file_movements_list(request):
     from .models import FileMovement
     movements = FileMovement.objects.all().order_by('-moved_at')
     return render(request, 'file_movements_list.html', {'movements': movements})
+from django.contrib.auth.models import User
+from .models import UserProfile
+
+def register(request):
+    if request.method == 'POST':
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        phone_number = request.POST['phone_number']
+        role = request.POST['role']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'register.html')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Email already registered.')
+            return render(request, 'register.html')
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=False
+        )
+
+        UserProfile.objects.create(
+            user=user,
+            role=role,
+            phone_number=phone_number,
+            is_approved=False
+        )
+
+        messages.success(request, 'Account created! Wait for admin approval before logging in.')
+        return redirect('login')
+
+    return render(request, 'register.html')
+
+
+@login_required
+def pending_users(request):
+    if not request.user.is_staff:
+        return redirect('dashboard')
+    pending = UserProfile.objects.filter(is_approved=False).select_related('user')
+    return render(request, 'pending_users.html', {'pending': pending})
+
+
+@login_required
+def approve_user(request, user_id):
+    if not request.user.is_staff:
+        return redirect('dashboard')
+    if request.method == 'POST':
+        profile = UserProfile.objects.get(user_id=user_id)
+        profile.is_approved = True
+        profile.user.is_active = True
+        profile.user.save()
+        profile.save()
+        messages.success(request, f'{profile.user.get_full_name()} has been approved.')
+    return redirect('pending_users')

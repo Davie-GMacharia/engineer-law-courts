@@ -78,3 +78,21 @@ class FileMovement(models.Model):
 
     def __str__(self):
         return f"{self.case.case_number} - {self.from_location} to {self.to_location}"
+class UserProfile(models.Model):
+    ROLES = [
+        ('Judge', 'Judge'),
+        ('Magistrate', 'Magistrate'),
+        ('Clerk', 'Clerk'),
+        ('Advocate', 'Advocate'),
+        ('Registrar', 'Registrar'),
+        ('Deputy Registrar', 'Deputy Registrar'),
+        ('Accounts', 'Accounts'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, choices=ROLES)
+    phone_number = models.CharField(max_length=20)
+    is_approved = models.BooleanField(default=False)
+    requested_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role}"

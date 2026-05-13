@@ -6,6 +6,9 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('register/', views.register, name='register'),
+    path('pending-users/', views.pending_users, name='pending_users'),
+    path('approve-user/<int:user_id>/', views.approve_user, name='approve_user'),
 
     # Cases
     path('cases/', views.cases_list, name='cases_list'),

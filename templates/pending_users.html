@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Pending Users — Engineer Law Courts{% endblock %}
+{% block page_title %}Pending User Approvals{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Users Awaiting Approval</span>
+        <span style="font-size:13px; color:var(--text-light);">{{ pending|length }} pending</span>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Requested</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for profile in pending %}
+                <tr>
+                    <td style="font-weight:500;">{{ profile.user.get_full_name }}</td>
+                    <td style="color:var(--text-mid);">{{ profile.user.email }}</td>
+                    <td style="color:var(--text-mid);">{{ profile.phone_number }}</td>
+                    <td><span class="badge" style="background:var(--cream); color:var(--text-mid);">{{ profile.role }}</span></td>
+                    <td style="color:var(--text-mid); font-size:13px;">{{ profile.requested_at|date:"d M Y g:i A" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'approve_user' profile.user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-gold" style="padding:5px 14px; font-size:12px;">✓ Approve</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" style="text-align:center; padding:50px; color:var(--text-light);">No pending approvals</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
