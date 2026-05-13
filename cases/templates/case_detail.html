@@ -82,6 +82,34 @@
                 </div>
                 {% empty %}
                 <div style="text-align:center; padding:40px; color:var(--text-light); font-size:14px;">No hearings scheduled</div>
+        </div>
+    </div>
+
+    <!-- File Movements -->
+    <div class="card" style="margin-top:20px;">
+        <div class="card-header">
+            <span class="card-title">File Movements</span>
+            <a href="{% url 'file_movement_new' case.pk %}" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">+ Record Movement</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>From</th><th>To</th><th>Purpose</th><th>Moved By</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for movement in case.movements.all %}
+                    <tr>
+                        <td>{{ movement.from_location }}</td>
+                        <td style="font-weight:500;">{{ movement.to_location }}</td>
+                        <td>{{ movement.purpose }}</td>
+                        <td style="font-size:13px;">{{ movement.moved_by|default:"—" }}</td>
+                        <td style="font-size:13px;">{{ movement.moved_at|date:"d M Y g:i A" }}</td>
+                        <td>{% if movement.status == "In Transit" %}<span class="badge badge-appealed">In Transit</span>{% elif movement.status == "Received" %}<span class="badge badge-active">Received</span>{% else %}<span class="badge badge-closed">Returned</span>{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-light);">No movements recorded</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
                 {% endfor %}
             </div>
         </div>
