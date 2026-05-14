@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.utils import timezone
 from .models import Case, Document, Hearing, Party, UserProfile, FileMovement
 
-# ================== REGISTER ==================
+# ================== REGISTER (Working) ==================
 def register(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -53,11 +52,16 @@ def register(request):
     return render(request, 'register.html')
 
 
-# ================== PENDING USERS (FIXED) ==================
+# ================== CORE VIEWS ==================
+@login_required
+def dashboard(request):
+    return render(request, 'dashboard.html', {})
+
+
 @login_required
 def pending_users(request):
     if not request.user.is_staff:
-        messages.error(request, "You don't have permission to view this page.")
+        messages.error(request, "You don't have permission.")
         return redirect('dashboard')
     
     pending = UserProfile.objects.filter(is_approved=False).select_related('user').order_by('-user__date_joined')
@@ -75,15 +79,26 @@ def approve_user(request, user_id):
     profile.user.is_active = True
     profile.user.save()
     profile.save()
-    messages.success(request, f'{profile.user.email} has been approved successfully.')
+    messages.success(request, f'{profile.user.email} approved successfully.')
     return redirect('pending_users')
 
 
-# Other views...
-@login_required
-def dashboard(request):
-    return render(request, 'dashboard.html', {})
-
+# Placeholder views to prevent URL errors
 @login_required
 def cases_list(request):
-    return render(request, 'cases_list.html', {'cases': Case.objects.all().order_by('-created_at')})
+    cases = Case.objects.all().order_by('-created_at')
+    return render(request, 'cases_list.html', {'cases': cases})
+
+@login_required
+def case_detail(request, pk):
+    case = get_object_or_404(Case, pk=pk)
+    return render(request, 'case_detail.html', {'case': case})
+
+@login_required
+def case_new(request):
+    return render(request, 'case_new.html', {})
+
+@login_required
+def file_movements_list(request):
+    movements = FileMovement.objects.all().order_by('-movement_date')
+    return render(request, 'file_movements_list.html', {'movements': movements})
