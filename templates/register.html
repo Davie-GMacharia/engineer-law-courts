@@ -6,90 +6,101 @@
     <title>Register — Engineer Law Courts</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'DM Sans',sans-serif; background:#0a1628; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .wrap { width:100%; max-width:480px; }
-        .header { text-align:center; margin-bottom:28px; }
-        .emblem { width:56px; height:56px; background:#c9a84c; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 12px; }
-        .header h1 { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#ffffff; margin-bottom:4px; }
-        .header p { font-size:12px; color:rgba(201,168,76,0.7); letter-spacing:1.5px; text-transform:uppercase; }
-        .card { background:#ffffff; border-radius:16px; padding:32px 28px; }
-        .form-group { margin-bottom:16px; }
-        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-        .form-label { display:block; font-size:12px; font-weight:500; color:#6b6b8a; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:5px; }
-        .form-control { width:100%; padding:10px 13px; border:1px solid #e8e4d8; border-radius:8px; font-size:14px; font-family:'DM Sans',sans-serif; color:#1a1a2e; transition:border-color 0.2s; }
-        .form-control:focus { outline:none; border-color:#c9a84c; box-shadow:0 0 0 3px rgba(201,168,76,0.1); }
-        .btn-register { width:100%; padding:13px; background:#0a1628; color:#ffffff; border:none; border-radius:8px; font-size:15px; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:8px; transition:background 0.2s; }
-        .btn-register:hover { background:#132040; }
-        .error-msg { background:#fdecea; color:#8b1a1a; border:1px solid #f5c2c2; border-radius:8px; padding:12px 16px; font-size:13px; margin-bottom:16px; }
-        .success-msg { background:#e6f4ec; color:#2d7a4f; border:1px solid #b8dfc9; border-radius:8px; padding:12px 16px; font-size:13px; margin-bottom:16px; }
-        .login-link { text-align:center; margin-top:16px; font-size:13px; color:#6b6b8a; }
-        .login-link a { color:#c9a84c; text-decoration:none; font-weight:500; }
-        .divider { text-align:center; color:#c9a84c; font-size:12px; margin:16px 0 0; letter-spacing:1px; }
-        @media(max-width:480px) { .form-grid { grid-template-columns:1fr; } .card { padding:24px 18px; } }
+        body { font-family: 'DM Sans', sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+        .wrap { max-width: 600px; margin: 40px auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .phone-input { display: flex; gap: 10px; }
+        .country-code { width: 140px; }
+        .toggle-btn { position: absolute; right: 15px; top: 38px; background: none; border: none; cursor: pointer; font-size: 18px; }
+        .password-toggle { position: relative; }
+        .btn-register { width: 100%; padding: 14px; background: #1a1a2e; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 <div class="wrap">
     <div class="header">
-        <div class="emblem">⚖</div>
         <h1>Create Account</h1>
         <p>Engineer Law Courts</p>
     </div>
     <div class="card">
         {% if messages %}
             {% for message in messages %}
-                <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">{{ message }}</div>
+                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</p>
             {% endfor %}
         {% endif %}
+
         <form method="post">
             {% csrf_token %}
+
             <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">First Name *</label>
-                    <input type="text" name="first_name" class="form-control" placeholder="First name" required>
+                <div>
+                    <label>First Name *</label>
+                    <input type="text" name="first_name" class="form-control" required>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Last Name *</label>
-                    <input type="text" name="last_name" class="form-control" placeholder="Last name" required>
+                <div>
+                    <label>Last Name *</label>
+                    <input type="text" name="last_name" class="form-control" required>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Email Address *</label>
-                <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Phone Number *</label>
-                <input type="text" name="phone_number" class="form-control" placeholder="e.g. 0712345678" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Role *</label>
-                <select name="role" class="form-control" required>
-                    <option value="">— Select your role —</option>
-                    <option value="Judge">Judge</option>
-                    <option value="Magistrate">Magistrate</option>
-                    <option value="Clerk">Clerk</option>
-                    <option value="Advocate">Advocate</option>
-                    <option value="Registrar">Registrar</option>
-                    <option value="Deputy Registrar">Deputy Registrar</option>
-                    <option value="Accounts">Accounts</option>
+
+            <label>Email Address *</label>
+            <input type="email" name="email" class="form-control" required>
+
+            <label>Phone Number *</label>
+            <div class="phone-input">
+                <select name="country_code" class="form-control country-code" required>
+                    <option value="+254">+254 (Kenya)</option>
+                    <option value="+255">+255 (Tanzania)</option>
+                    <option value="+256">+256 (Uganda)</option>
+                    <option value="+1">+1 (USA/Canada)</option>
+                    <option value="+44">+44 (UK)</option>
                 </select>
+                <input type="tel" name="phone_number" class="form-control" placeholder="712345678" required>
             </div>
+
+            <label>Role *</label>
+            <select name="role" class="form-control" required>
+                <option value="">Select Role</option>
+                <option value="Judge">Judge</option>
+                <option value="Magistrate">Magistrate</option>
+                <option value="Clerk">Clerk</option>
+                <option value="Advocate">Advocate</option>
+                <option value="Registrar">Registrar</option>
+            </select>
+
             <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">Password *</label>
-                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                <div class="password-toggle">
+                    <label>Password *</label>
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <button type="button" class="toggle-btn" onclick="togglePassword('password')">👁</button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Confirm Password *</label>
-                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm" required>
+                <div class="password-toggle">
+                    <label>Confirm Password *</label>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                    <button type="button" class="toggle-btn" onclick="togglePassword('confirm_password')">👁</button>
                 </div>
             </div>
+
             <button type="submit" class="btn-register">Create Account</button>
         </form>
-        <div class="login-link">Already have an account? <a href="{% url 'login' %}">Sign in</a></div>
-        <div class="divider">⚖ Republic of Kenya Judiciary</div>
     </div>
 </div>
+
+<script>
+function togglePassword(id) {
+    const field = document.getElementById(id);
+    const btn = field.parentElement.querySelector('.toggle-btn');
+    if (field.type === "password") {
+        field.type = "text";
+        btn.textContent = "🙈";
+    } else {
+        field.type = "password";
+        btn.textContent = "👁";
+    }
+}
+</script>
 </body>
 </html>
