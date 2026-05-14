@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Case, Document, Hearing, Party, UserProfile, FileMovement
 
-# ================== AUTH ==================
+# ================== AUTH VIEWS ==================
 def register(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -52,7 +52,6 @@ def register(request):
     return render(request, 'register.html')
 
 
-# ================== CORE VIEWS ==================
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html', {})
@@ -63,7 +62,6 @@ def pending_users(request):
     if not request.user.is_staff:
         messages.error(request, "You don't have permission.")
         return redirect('dashboard')
-    
     pending = UserProfile.objects.filter(is_approved=False).select_related('user').order_by('-user__date_joined')
     return render(request, 'pending_users.html', {'pending': pending})
 
@@ -73,7 +71,6 @@ def approve_user(request, user_id):
     if not request.user.is_staff:
         messages.error(request, "You don't have permission.")
         return redirect('dashboard')
-    
     profile = get_object_or_404(UserProfile, user_id=user_id)
     profile.is_approved = True
     profile.user.is_active = True
@@ -83,41 +80,55 @@ def approve_user(request, user_id):
     return redirect('pending_users')
 
 
-# ================== PLACEHOLDER VIEWS (to satisfy urls.py) ==================
+# ================== OTHER VIEWS ==================
 @login_required
 def cases_list(request):
     cases = Case.objects.all().order_by('-created_at')
     return render(request, 'cases_list.html', {'cases': cases})
+
 
 @login_required
 def case_detail(request, pk):
     case = get_object_or_404(Case, pk=pk)
     return render(request, 'case_detail.html', {'case': case})
 
-@login_required
-def documents_list(request):
-    return render(request, 'documents_list.html', {})
 
 @login_required
 def case_new(request):
     return render(request, 'case_new.html', {})
+
+
+@login_required
+def documents_list(request):
+    return render(request, 'documents_list.html', {})
+
+
+@login_required
+def document_upload(request, case_pk):
+    return redirect('case_detail', pk=case_pk)
+
+
+@login_required
+def hearings_list(request):
+    hearings = Hearing.objects.all().order_by('-hearing_date')
+    return render(request, 'hearings_list.html', {'hearings': hearings})
+
+
+@login_required
+def hearing_new(request, case_pk):
+    return redirect('case_detail', pk=case_pk)
+
 
 @login_required
 def file_movements_list(request):
     movements = FileMovement.objects.all().order_by('-movement_date')
     return render(request, 'file_movements_list.html', {'movements': movements})
 
-@login_required
-def document_upload(request, case_pk):
-    return redirect('case_detail', pk=case_pk)
-
-@login_required
-def hearing_new(request, case_pk):
-    return redirect('case_detail', pk=case_pk)
 
 @login_required
 def file_movement_new(request, case_pk):
     return redirect('case_detail', pk=case_pk)
+
 
 @login_required
 def file_movement_receive(request, movement_pk):
