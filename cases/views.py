@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Case, Document, Hearing, Party, UserProfile, FileMovement
 
-# ================== REGISTER (Working) ==================
+# ================== AUTH ==================
 def register(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -83,7 +83,7 @@ def approve_user(request, user_id):
     return redirect('pending_users')
 
 
-# Placeholder views to prevent URL errors
+# ================== PLACEHOLDER VIEWS (to satisfy urls.py) ==================
 @login_required
 def cases_list(request):
     cases = Case.objects.all().order_by('-created_at')
@@ -95,6 +95,10 @@ def case_detail(request, pk):
     return render(request, 'case_detail.html', {'case': case})
 
 @login_required
+def documents_list(request):
+    return render(request, 'documents_list.html', {})
+
+@login_required
 def case_new(request):
     return render(request, 'case_new.html', {})
 
@@ -102,3 +106,19 @@ def case_new(request):
 def file_movements_list(request):
     movements = FileMovement.objects.all().order_by('-movement_date')
     return render(request, 'file_movements_list.html', {'movements': movements})
+
+@login_required
+def document_upload(request, case_pk):
+    return redirect('case_detail', pk=case_pk)
+
+@login_required
+def hearing_new(request, case_pk):
+    return redirect('case_detail', pk=case_pk)
+
+@login_required
+def file_movement_new(request, case_pk):
+    return redirect('case_detail', pk=case_pk)
+
+@login_required
+def file_movement_receive(request, movement_pk):
+    return redirect('file_movements_list')
