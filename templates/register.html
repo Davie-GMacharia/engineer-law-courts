@@ -3,101 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — Engineer Law Courts</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Register - Engineer Law Courts</title>
     <style>
-        body { font-family: 'DM Sans', sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
-        .wrap { max-width: 600px; margin: 40px auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .phone-input { display: flex; gap: 10px; }
-        .country-code { width: 140px; }
-        .toggle-btn { position: absolute; right: 15px; top: 38px; background: none; border: none; cursor: pointer; font-size: 18px; }
-        .password-toggle { position: relative; }
-        .btn-register { width: 100%; padding: 14px; background: #1a1a2e; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        body {font-family: system-ui, -apple-system, sans-serif; background: #f4f4f9; margin:0; padding:20px;}
+        .card {max-width: 620px; margin:40px auto; background:white; padding:35px; border-radius:12px; box-shadow:0 4px 25px rgba(0,0,0,0.1);}
+        .form-control {width:100%; padding:12px; margin:8px 0 18px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;}
+        .form-grid {display:grid; grid-template-columns:1fr 1fr; gap:15px;}
+        .phone-input {display:flex; gap:10px;}
+        .country-code {width:170px;}
+        .password-toggle {position:relative;}
+        .toggle-btn {position:absolute; right:15px; top:42px; background:none; border:none; font-size:20px; cursor:pointer;}
+        .btn {width:100%; padding:14px; background:#1a1a2e; color:white; border:none; border-radius:6px; font-size:16px; margin-top:10px; cursor:pointer;}
     </style>
 </head>
 <body>
-<div class="wrap">
-    <div class="header">
-        <h1>Create Account</h1>
-        <p>Engineer Law Courts</p>
-    </div>
-    <div class="card">
-        {% if messages %}
-            {% for message in messages %}
-                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+<div class="card">
+    <h2 style="text-align:center; margin-bottom:25px;">Create New Account</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:{% if 'error' in message.tags %}red{% else %}green{% endif %}; text-align:center; font-weight:bold;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-            <div class="form-grid">
-                <div>
-                    <label>First Name *</label>
-                    <input type="text" name="first_name" class="form-control" required>
-                </div>
-                <div>
-                    <label>Last Name *</label>
-                    <input type="text" name="last_name" class="form-control" required>
-                </div>
+        <div class="form-grid">
+            <div>
+                <label>First Name *</label>
+                <input type="text" name="first_name" class="form-control" required>
             </div>
-
-            <label>Email Address *</label>
-            <input type="email" name="email" class="form-control" required>
-
-            <label>Phone Number *</label>
-            <div class="phone-input">
-                <select name="country_code" class="form-control country-code" required>
-                    <option value="+254">+254 (Kenya)</option>
-                    <option value="+255">+255 (Tanzania)</option>
-                    <option value="+256">+256 (Uganda)</option>
-                    <option value="+1">+1 (USA/Canada)</option>
-                    <option value="+44">+44 (UK)</option>
-                </select>
-                <input type="tel" name="phone_number" class="form-control" placeholder="712345678" required>
+            <div>
+                <label>Last Name *</label>
+                <input type="text" name="last_name" class="form-control" required>
             </div>
+        </div>
 
-            <label>Role *</label>
-            <select name="role" class="form-control" required>
-                <option value="">Select Role</option>
-                <option value="Judge">Judge</option>
-                <option value="Magistrate">Magistrate</option>
-                <option value="Clerk">Clerk</option>
-                <option value="Advocate">Advocate</option>
-                <option value="Registrar">Registrar</option>
+        <label>Email Address *</label>
+        <input type="email" name="email" class="form-control" required placeholder="your@email.com">
+
+        <label>Phone Number *</label>
+        <div class="phone-input">
+            <select name="country_code" class="form-control country-code" required>
+                <option value="+254">+254 Kenya</option>
+                <option value="+255">+255 Tanzania</option>
+                <option value="+256">+256 Uganda</option>
+                <option value="+1">+1 USA/Canada</option>
+                <option value="+44">+44 UK</option>
             </select>
+            <input type="tel" name="phone_number" class="form-control" placeholder="712345678" required>
+        </div>
 
-            <div class="form-grid">
-                <div class="password-toggle">
-                    <label>Password *</label>
-                    <input type="password" name="password" id="password" class="form-control" required>
-                    <button type="button" class="toggle-btn" onclick="togglePassword('password')">👁</button>
-                </div>
-                <div class="password-toggle">
-                    <label>Confirm Password *</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
-                    <button type="button" class="toggle-btn" onclick="togglePassword('confirm_password')">👁</button>
-                </div>
+        <label>Role *</label>
+        <select name="role" class="form-control" required>
+            <option value="">Select Role</option>
+            <option value="Clerk">Clerk</option>
+            <option value="Magistrate">Magistrate</option>
+            <option value="Judge">Judge</option>
+            <option value="Registrar">Registrar</option>
+            <option value="Advocate">Advocate</option>
+        </select>
+
+        <div class="form-grid">
+            <div class="password-toggle">
+                <label>Password *</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+                <button type="button" class="toggle-btn" onclick="togglePassword('password')">👁</button>
             </div>
+            <div class="password-toggle">
+                <label>Confirm Password *</label>
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                <button type="button" class="toggle-btn" onclick="togglePassword('confirm_password')">👁</button>
+            </div>
+        </div>
 
-            <button type="submit" class="btn-register">Create Account</button>
-        </form>
-    </div>
+        <button type="submit" class="btn">Create Account</button>
+    </form>
 </div>
 
 <script>
 function togglePassword(id) {
-    const field = document.getElementById(id);
-    const btn = field.parentElement.querySelector('.toggle-btn');
-    if (field.type === "password") {
-        field.type = "text";
+    const input = document.getElementById(id);
+    const btn = input.parentElement.querySelector('.toggle-btn');
+    if (input.type === "password") {
+        input.type = "text";
         btn.textContent = "🙈";
     } else {
-        field.type = "password";
+        input.type = "password";
         btn.textContent = "👁";
     }
 }
