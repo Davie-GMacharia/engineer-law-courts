@@ -3,10 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
-from datetime import timedelta
 from .models import Case, Document, Hearing, Party, UserProfile, FileMovement
 
-# ================== AUTH VIEWS ==================
+# ================== REGISTER ==================
 def register(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -54,32 +53,14 @@ def register(request):
     return render(request, 'register.html')
 
 
-@login_required
-def dashboard(request):
-    now = timezone.now()
-    context = {
-        'total_cases': Case.objects.count(),
-        'active_cases': Case.objects.filter(case_status='Active').count() if hasattr(Case, 'case_status') else 0,
-        'recent_cases': Case.objects.order_by('-created_at')[:5],
-    }
-    return render(request, 'dashboard.html', context)
-
-
-@login_required
-def cases_list(request):
-    cases = Case.objects.all().order_by('-created_at')
-    return render(request, 'cases_list.html', {'cases': cases})
-
-
-@login_required
-def case_detail(request, pk):
-    case = get_object_or_404(Case, pk=pk)
-    return render(request, 'case_detail.html', {'case': case})
-
-
+# ================== PENDING USERS (FIXED) ==================
 @login_required
 def pending_users(request):
-    pending = UserProfile.objects.filter(is_approved=False).select_related('user')
+    if not request.user.is_staff:
+        messages.error(request, "You don't have permission to view this page.")
+        return redirect('dashboard')
+    
+    pending = UserProfile.objects.filter(is_approved=False).select_related('user').order_by('-user__date_joined')
     return render(request, 'pending_users.html', {'pending': pending})
 
 
@@ -88,44 +69,21 @@ def approve_user(request, user_id):
     if not request.user.is_staff:
         messages.error(request, "You don't have permission.")
         return redirect('dashboard')
+    
     profile = get_object_or_404(UserProfile, user_id=user_id)
     profile.is_approved = True
     profile.user.is_active = True
     profile.user.save()
     profile.save()
-    messages.success(request, f'{profile.user.get_full_name() or profile.user.email} approved successfully.')
+    messages.success(request, f'{profile.user.email} has been approved successfully.')
     return redirect('pending_users')
 
 
-# Placeholder views to prevent URL errors
+# Other views...
 @login_required
-def case_new(request):
-    return render(request, 'case_new.html', {})
+def dashboard(request):
+    return render(request, 'dashboard.html', {})
 
 @login_required
-def documents_list(request):
-    return render(request, 'documents_list.html', {})
-
-@login_required
-def document_upload(request, case_pk):
-    return redirect('case_detail', pk=case_pk)
-
-@login_required
-def hearings_list(request):
-    return render(request, 'hearings_list.html', {})
-
-@login_required
-def hearing_new(request, case_pk):
-    return redirect('case_detail', pk=case_pk)
-
-@login_required
-def file_movements_list(request):
-    return render(request, 'file_movements_list.html', {})
-
-@login_required
-def file_movement_new(request, case_pk):
-    return redirect('case_detail', pk=case_pk)
-
-@login_required
-def file_movement_receive(request, movement_pk):
-    return redirect('file_movements_list')
+def cases_list(request):
+    return render(request, 'cases_list.html', {'cases': Case.objects.all().order_by('-created_at')})
