@@ -80,55 +80,48 @@ def approve_user(request, user_id):
     return redirect('pending_users')
 
 
-# ================== OTHER VIEWS ==================
+# ================== FILE MOVEMENTS (FIXED) ==================
+@login_required
+def file_movements_list(request):
+    movements = FileMovement.objects.all().order_by('-moved_at')  # Fixed: using correct field
+    return render(request, 'file_movements_list.html', {'movements': movements})
+
+
+# Other required views
 @login_required
 def cases_list(request):
     cases = Case.objects.all().order_by('-created_at')
     return render(request, 'cases_list.html', {'cases': cases})
-
 
 @login_required
 def case_detail(request, pk):
     case = get_object_or_404(Case, pk=pk)
     return render(request, 'case_detail.html', {'case': case})
 
-
 @login_required
 def case_new(request):
     return render(request, 'case_new.html', {})
-
 
 @login_required
 def documents_list(request):
     return render(request, 'documents_list.html', {})
 
-
 @login_required
 def document_upload(request, case_pk):
     return redirect('case_detail', pk=case_pk)
-
 
 @login_required
 def hearings_list(request):
     hearings = Hearing.objects.all().order_by('-hearing_date')
     return render(request, 'hearings_list.html', {'hearings': hearings})
 
-
 @login_required
 def hearing_new(request, case_pk):
     return redirect('case_detail', pk=case_pk)
 
-
-@login_required
-def file_movements_list(request):
-    movements = FileMovement.objects.all().order_by('-movement_date')
-    return render(request, 'file_movements_list.html', {'movements': movements})
-
-
 @login_required
 def file_movement_new(request, case_pk):
     return redirect('case_detail', pk=case_pk)
-
 
 @login_required
 def file_movement_receive(request, movement_pk):
